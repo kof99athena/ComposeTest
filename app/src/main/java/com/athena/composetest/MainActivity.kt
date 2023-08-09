@@ -1,10 +1,12 @@
 package com.athena.composetest
 
+import android.content.res.Configuration
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -21,6 +23,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.modifier.ModifierLocalReadScope
 import androidx.compose.ui.modifier.modifierLocalConsumer
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -34,9 +37,14 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            //setContent 블록은 구성 가능한 함수가 호출되는 활동의 레이아웃을 정의함.
-            //'구성가능한 함수'는 다른 '구성가능한 함수'에서만 호출할 수 있다.
-            MessageCard(Message("아테나", "컴포즈입니다. 바닐라라떼"))
+            ComposeTestTheme {
+                Surface(modifier = Modifier.fillMaxSize()) {
+                    //setContent 블록은 구성 가능한 함수가 호출되는 활동의 레이아웃을 정의함.
+                    //'구성가능한 함수'는 다른 '구성가능한 함수'에서만 호출할 수 있다.
+                    MessageCard(Message("Athena", "Hello! I'm Athena ♥"))
+
+                }
+            }
 
         } //setContent
     }//onCreate
@@ -56,31 +64,53 @@ fun MessageCard(msg: Message) {
         Image(
             painter = painterResource(id = R.drawable.ms17),
             contentDescription = "Contact profile picture",
-            modifier = Modifier.size(40.dp)
+            modifier = Modifier
+                .size(40.dp)
                 .clip(CircleShape)
+                .border(1.5.dp, MaterialTheme.colorScheme.secondary, CircleShape)
+
         )
         Spacer(modifier = Modifier.width(8.dp))
 
         Column {
 
             //Column은 요소를 수직으로 정렬할 수 있다.
-            Text(text = msg.author)
+
+            Text(
+                text = msg.author,
+                color = MaterialTheme.colorScheme.secondaryContainer,
+                style = MaterialTheme.typography.titleLarge
+            )
+
             Spacer(modifier = Modifier.height(4.dp))
-            Text(text = msg.body)
-            //Text함수는 텍스트를 표시해준다.
+
+            Surface (shape = MaterialTheme.shapes.medium, shadowElevation = 1.dp){
+                Text(
+                    text = msg.body,
+                    style = MaterialTheme.typography.bodySmall,
+                    modifier = Modifier.padding(all= 4.dp),
+                )
+                //Text함수는 텍스트를 표시해준다.
+            }
+
         }
-    }
 
-
-
-
+    }// Row 블록
 }//MessageCard method
 
-@Preview(showBackground = true)
+@Preview(name = "LightColorScheme")
+@Preview(showBackground = true,
+    uiMode = Configuration.UI_MODE_NIGHT_YES,
+    name = "DarkColorScheme")
 //@Preview 주석은 Composable 함수를 미리보기로 표시하도록 지정하는 데 사용
 @Composable
 fun PreviewMessageCard() {
-    MessageCard(
-        msg = Message("---------------------", "========================")
-    )
+    ComposeTestTheme {
+        Surface {
+            MessageCard(
+                msg = Message("---------------------", "========================")
+            )
+        }
+    }
+
 }//PreviewMessageCard method
